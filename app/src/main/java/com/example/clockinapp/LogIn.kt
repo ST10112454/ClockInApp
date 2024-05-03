@@ -31,7 +31,6 @@ class LogIn : AppCompatActivity() {
             val password = passwordInput.text.toString()
 
             if (validationInput(username, password)){
-                showSuccess();
                 val intent = Intent(this, Home::class.java)
                 startActivity(intent)
             }
@@ -59,7 +58,4 @@ class LogIn : AppCompatActivity() {
         Toast.makeText(this, "Please Enter Valid Data", Toast.LENGTH_LONG).show()
     }
 
-    private fun showSuccess(){
-        Toast.makeText(this, "You have logged in successfully", Toast.LENGTH_LONG).show()
-    }
 }
