@@ -13,13 +13,13 @@
         android:theme="@style/Theme.ClockInApp"
         tools:targetApi="31">
         <activity
+            android:name=".NewEntry"
+            android:exported="false" />
+        <activity
             android:name=".LogIn"
             android:exported="false" />
         <activity
             android:name=".Report"
-            android:exported="false" />
-        <activity
-            android:name=".NewEntry"
             android:exported="false" />
         <activity
             android:name=".EntryList"
