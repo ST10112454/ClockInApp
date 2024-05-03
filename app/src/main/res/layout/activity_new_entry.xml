@@ -1,27 +1,129 @@
-<?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main"
     android:layout_width="match_parent"
-    android:layout_height="650dp"
-    android:background="@drawable/backgroundimage"
-    android:visibility="visible"
-    tools:context=".NewEntry">
+    android:layout_height="match_parent"
+    android:background="#FFFFFF"
+    android:orientation="vertical">
 
-    <com.google.android.material.bottomnavigation.BottomNavigationView
-        android:id="@+id/bottomNavigationView"
+    <!-- Space for Icons -->
+
+    <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        app:layout_constraintBottom_toBottomOf="parent"
-        android:layout_marginEnd="20dp"
-        android:layout_marginStart="20dp"
-        android:layout_marginBottom="20dp"
-        android:layout_marginTop="20dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toStartOf="parent"
-        app:menu="@menu/botton_menu"
-        app:itemIconSize="25dp"/>
-</RelativeLayout>
+        android:layout_marginTop="16dp"
+        android:background="#0C48FB"
+        android:gravity="center">
+
+
+    </LinearLayout>
+
+    <!-- Calendar -->
+
+    <ImageView
+        android:id="@+id/imageView5"
+        android:layout_width="match_parent"
+        android:layout_height="245dp"
+        app:srcCompat="@drawable/img" />
+
+    <CalendarView
+        android:id="@+id/calendarView"
+        android:layout_width="match_parent"
+        android:layout_height="228dp"
+        android:layout_marginTop="16dp"
+        android:visibility="gone" />
+
+    <!-- Form -->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp"
+        android:orientation="vertical">
+
+        <!-- Title -->
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="Add new entry"
+            android:textSize="20sp"
+            android:textStyle="bold" />
+
+        <!-- Project Name -->
+        <EditText
+            android:id="@+id/editTextProjectName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Project Name: Redesign for Company" />
+
+        <!-- Project Description -->
+        <EditText
+            android:id="@+id/editTextProjectDescription"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Project Description: Create design for app or web design " />
+
+        <!-- Date -->
+        <EditText
+            android:id="@+id/editTextDate"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Date: 02 September 2024" />
+
+        <!-- Start Time -->
+        <EditText
+            android:id="@+id/editTextStartTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="Start Time: 09:00" />
+
+        <!-- End Time -->
+        <EditText
+            android:id="@+id/editTextEndTime"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:hint="End Time: 13:00" />
+
+        <!-- Add Image -->
+        <Button
+            android:id="@+id/btnAddImage"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:text="Add Image" />
+
+        <!-- Select Category -->
+        <Spinner
+            android:id="@+id/spinnerCategory"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp" />
+
+        <!-- Buttons -->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:gravity="center"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btnAddNew"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="16dp"
+                android:text="Add New" />
+
+            <Button
+                android:id="@+id/btnCreateEntry"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Create Entry" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>
