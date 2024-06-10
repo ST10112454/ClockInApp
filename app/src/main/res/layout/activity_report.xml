@@ -8,25 +8,104 @@
     android:background="@drawable/backgroundimage"
     android:visibility="visible"
     tools:context=".Report">
-    <!--Goal Setting heading-->
-    <TextView
-        android:id="@+id/Greeting"
-        android:layout_width="match_parent"
-        android:layout_height="71dp"
-        android:gravity="center"
-        android:text="Goal Setting"
-        android:textSize="25sp" />
-    <TextView
-        android:id="@+id/UserNameHeading"
-        android:layout_width="400dp"
-        android:layout_height="116dp"
-        android:layout_below="@+id/Greeting"
-        android:layout_marginTop="6dp"
-        android:gravity="center"
-        android:text="How many hours do you want to work per day?or how hungry are you"
-        android:textSize="30sp"
-        android:textStyle="bold" />
 
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:padding="16dp">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="16dp">
+            <!--Goal Setting heading-->
+            <TextView
+                android:id="@+id/Greeting"
+                android:layout_width="match_parent"
+                android:layout_height="48dp"
+                android:gravity="center"
+                android:text="Goal Setting"
+                android:textSize="25sp" />
+
+            <TextView
+                android:id="@+id/UserNameHeading"
+                android:layout_width="350dp"
+                android:layout_height="82dp"
+                android:layout_below="@+id/Greeting"
+                android:layout_marginTop="6dp"
+                android:gravity="center"
+                android:text="How many hours do you want to work per day?or how hungry are you"
+                android:textSize="12sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/minDailyGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Minimum Daily Goal (hours)"
+                android:inputType="numberDecimal" />
+
+            <EditText
+                android:id="@+id/maxDailyGoal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:hint="Maximum Daily Goal (hours)"
+                android:inputType="numberDecimal" />
+
+            <Button
+                android:id="@+id/saveGoalsButton"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Save Goals" />
+
+            <TextView
+                android:id="@+id/taskName"
+                style="@style/TextAppearance.AppCompat.Title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:layout_margin="20dp"
+                android:text="Goal Title:" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal">
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/newTaskButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:padding="5dp"
+                    android:text="New Goal"
+                    android:textColor="?colorOnPrimary" />
+
+                <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+                    android:id="@+id/viewGraphButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="20dp"
+                    android:backgroundTint="?attr/colorPrimary"
+                    android:padding="5dp"
+                    android:text="View Graph"
+                    android:textColor="?colorOnPrimary" />
+            </LinearLayout>
+
+            <androidx.recyclerview.widget.RecyclerView
+                android:id="@+id/todoListRecyclerView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:backgroundTint="@color/design_default_color_background" />
+
+        </LinearLayout>
+    </ScrollView>
+
+
+    <!--
     <com.google.android.material.slider.Slider
         android:contentDescription="Slider for selecting hours"
         android:id="@+id/sliderhour"
@@ -36,39 +115,9 @@
         android:layout_alignParentBottom="true"
         android:layout_marginTop="187dp"
         android:layout_marginBottom="415dp" />
+    -->
     <!--Goal set-->
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="448dp"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="-30dp"
-        android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/taskName"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Goal Title:"
-            style="@style/TextAppearance.AppCompat.Title"
-            android:layout_margin="20dp"
-            android:layout_gravity="center"/>
-
-        <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
-            android:id="@+id/newTaskButton"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_margin="20dp"
-            android:backgroundTint="?attr/colorPrimary"
-            android:padding="5dp"
-            android:text="New Goal"
-            android:textColor="?colorOnPrimary" />
-        <androidx.recyclerview.widget.RecyclerView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/todoListRecyclerView"
-            android:backgroundTint="@color/design_default_color_background"
-            />
-    </LinearLayout>
 
 
 

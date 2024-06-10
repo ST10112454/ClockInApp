@@ -71,6 +71,7 @@
 
         <!-- Text link to send you to Register page-->
         <TextView
+            android:id="@+id/signUpTextView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Dont have an account ? Register"

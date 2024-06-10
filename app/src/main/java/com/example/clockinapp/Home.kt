@@ -38,7 +38,7 @@ class Home : AppCompatActivity() {
     private lateinit var textView: TextView
     private lateinit var button: Button
 
-    @SuppressLint("MissingInflatedId")
+    //@SuppressLint("MissingInflatedId")
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()

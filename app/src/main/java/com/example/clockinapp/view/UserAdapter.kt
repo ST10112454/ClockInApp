@@ -96,6 +96,7 @@ class UserAdapter(val c:Context, val userList:ArrayList<UserData>): RecyclerView
         }
     }
 
+
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): UserViewHolder {
         val inflater = LayoutInflater.from(parent.context)
         val v = inflater.inflate(R.layout.list_item,parent,false)

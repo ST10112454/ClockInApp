@@ -62,6 +62,7 @@ class AddItem : AppCompatActivity() {
                 diaglog,_->
             val nameOfP = projectName.text.toString()
             val desc = description.text.toString()
+
             userList.add(UserData("Project: $nameOfP", "Description :$desc" ))
             userAdapter.notifyDataSetChanged()
             Toast.makeText(this,"Adding Entry Infromation successful ", Toast.LENGTH_SHORT).show()

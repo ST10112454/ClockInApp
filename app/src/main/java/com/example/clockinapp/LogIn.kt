@@ -1,65 +1,90 @@
 package com.example.clockinapp
-
 import android.content.Intent
 import android.os.Bundle
-import android.widget.Button
-import android.widget.EditText
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
-import androidx.navigation.Navigation
-import com.example.clockinapp.R.id.username_input
+import com.example.clockinapp.databinding.ActivityLogInBinding
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 class LogIn : AppCompatActivity() {
+    private lateinit var database: FirebaseDatabase
+    private lateinit var binding: ActivityLogInBinding
+    private lateinit var usersRef: DatabaseReference
 
-    lateinit var usernameInput : EditText
-    lateinit var passwordInput : EditText
-    lateinit var loginBtn : Button
+    class User {
+        var password: String? = null
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
-        setContentView(R.layout.activity_log_in)
+        binding = ActivityLogInBinding.inflate(layoutInflater)
+        setContentView(binding.root)
+        database = FirebaseDatabase.getInstance()
+        usersRef = database.reference.child("users")
 
-        usernameInput = findViewById(username_input)
-        passwordInput = findViewById(R.id.password_input)
-        loginBtn = findViewById(R.id.login_btn)
-
-        loginBtn.setOnClickListener {
-            val username = usernameInput.text.toString()
-            val password = passwordInput.text.toString()
-
-            if (validationInput(username, password)){
-                showSuccess();
-                val intent = Intent(this, Home::class.java)
-                startActivity(intent)
-            }
-            else{
-                showError();
-            }
-            /*val intent = Intent(this, Register::class.java)
-            startActivity(intent)*/
-        }
-
-
+        //setContentView(R.layout.activity_log_in)
         //defult
         ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
             v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
             insets
         }
+        val signUpTextView = findViewById<TextView>(R.id.signUpTextView)
+        signUpTextView.setOnClickListener {
+            // Start the SignUp activity
+            val intent = Intent(this, SignUp::class.java)
+            startActivity(intent)
+        }
+        binding.loginBtn.setOnClickListener {
+            val username = binding.usernameInput.text.toString()
+            val password = binding.passwordInput.text.toString()
 
-    }
-    private fun validationInput(username:String, password:String) : Boolean {
-        return username.isNotBlank() && password.isNotBlank()
-    }
+            if (username.isEmpty() || password.isEmpty()) {
+                Toast.makeText(this, "Please enter email and password", Toast.LENGTH_SHORT).show()
+                return@setOnClickListener
+            }
+            usersRef.orderByChild("userName").equalTo(username).addListenerForSingleValueEvent(object :
+                ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        for (userSnapshot in dataSnapshot.children) {
+                            val user = userSnapshot.getValue(User::class.java)
+                            if (user != null && user.password == password) {
+                                // Login successful
+                                Toast.makeText(this@LogIn, "Login successful", Toast.LENGTH_SHORT)
+                                    .show()
+                                // Redirect to Home Activity or any other activity you want
+                                startActivity(Intent(this@LogIn, Report::class.java))
+                                finish()
+                                return
+                            }
+                        }
+                    }
+                    Toast.makeText(this@LogIn, "Invalid username or password", Toast.LENGTH_SHORT)
+                        .show()
+                }
 
-    private fun showError(){
-        Toast.makeText(this, "Please Enter Valid Data", Toast.LENGTH_LONG).show()
-    }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Error handling
+                    Toast.makeText(
+                        this@LogIn,
+                        "Database error: ${databaseError.message}",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+            })
+        }
 
-    private fun showSuccess(){
-        Toast.makeText(this, "You have logged in successfully", Toast.LENGTH_LONG).show()
     }
 }
+
+

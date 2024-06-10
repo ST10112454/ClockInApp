@@ -46,9 +46,10 @@
             android:textStyle="bold"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"/>
+
         <EditText
             android:id="@+id/Catagory"
-            android:hint="Catagory"
+            android:hint="Catagory must type in"
             android:inputType="text"
             android:padding="15dp"
             android:textColor="@color/DarkBlue"
@@ -75,18 +76,6 @@
             android:id="@+id/text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"/>
-
-        <Button
-            android:id="@+id/button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="Show Dialog"/>
-
-
-
-
-
-
     </LinearLayout>
 
 </LinearLayout>
