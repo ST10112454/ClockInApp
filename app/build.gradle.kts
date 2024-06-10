@@ -68,5 +68,4 @@ dependencies {
 
     implementation("com.github.Philjay:MPAndroidChart:v3.1.0")
     implementation("com.google.firebase:firebase-database:20.1.0")
-
 }

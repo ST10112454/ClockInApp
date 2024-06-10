@@ -1,155 +1,92 @@
 package com.example.clockinapp
 
-import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
-
-import android.app.DatePickerDialog
 import android.graphics.Color
-import android.widget.Button
-import android.widget.LinearLayout
+import android.os.Bundle
+import android.util.Log
+import androidx.appcompat.app.AppCompatActivity
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.github.mikephil.charting.utils.ColorTemplate
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import java.text.SimpleDateFormat
-import java.util.*
 
 class Graph : AppCompatActivity() {
 
-    private lateinit var pieChartContainer: LinearLayout
-    private lateinit var selectDateButton: Button
-    private val database = FirebaseDatabase.getInstance().reference
-    private val dateFormat = SimpleDateFormat("dd/MM/yyyy", Locale.US)
-    private var startDate: Date? = null
-    private var endDate: Date? = null
+    lateinit var pieChart: PieChart
+    private lateinit var database: DatabaseReference
+    private lateinit var auth: FirebaseAuth
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        //enableEdgeToEdge()
         setContentView(R.layout.activity_graph)
 
-        pieChartContainer = findViewById(R.id.pie_chart_container)
-        selectDateButton = findViewById(R.id.select_date_button)
+        pieChart = findViewById(R.id.pie_chart)
+        database = FirebaseDatabase.getInstance().reference
+        auth = FirebaseAuth.getInstance()
 
-        selectDateButton.setOnClickListener {
-            showDateRangePicker()
+        val user = auth.currentUser
+        if (user != null) {
+            val userId = user.uid
+            fetchGoals(userId)
         }
-
-        /*ViewCompat.setOnApplyWindowInsetsListener(findViewById(R.id.main)) { v, insets ->
-            val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            v.setPadding(systemBars.left, systemBars.top, systemBars.right, systemBars.bottom)
-            insets
-        }*/
     }
 
-    private fun showDateRangePicker() {
-        val calendar = Calendar.getInstance()
-        val datePickerDialog = DatePickerDialog(this, { _, year, month, dayOfMonth ->
-            calendar.set(year, month, dayOfMonth)
-            startDate = calendar.time
+    private fun fetchGoals(userId: String) {
+        val goalsQuery = database.child("goals").orderByChild("userId").equalTo(userId)
+        val tasksQuery = database.child("taskentry").orderByChild("userId").equalTo(userId)
 
-            val endCalendar = Calendar.getInstance()
-            val endDatePickerDialog = DatePickerDialog(this, { _, endYear, endMonth, endDayOfMonth ->
-                endCalendar.set(endYear, endMonth, endDayOfMonth)
-                endDate = endCalendar.time
-                fetchDataFromDatabase()
-            }, endCalendar.get(Calendar.YEAR), endCalendar.get(Calendar.MONTH), endCalendar.get(Calendar.DAY_OF_MONTH))
-            endDatePickerDialog.show()
-        }, calendar.get(Calendar.YEAR), calendar.get(Calendar.MONTH), calendar.get(Calendar.DAY_OF_MONTH))
-        datePickerDialog.show()
-    }
+        goalsQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(goalsSnapshot: DataSnapshot) {
+                    for (goalSnapshot in goalsSnapshot.children) {
+                        val minDailyGoal = goalSnapshot.child("minDailyGoal").getValue(Int::class.java) ?: 0
+                        val maxDailyGoal = goalSnapshot.child("maxDailyGoal").getValue(Int::class.java) ?: 0
 
-    private fun fetchDataFromDatabase() {
-        if (startDate == null || endDate == null) return
+                        tasksQuery.addListenerForSingleValueEvent(object : ValueEventListener {
+                            override fun onDataChange(tasksSnapshot: DataSnapshot) {
+                                var totalHoursWorked = 0f
 
-        val startDateString = dateFormat.format(startDate!!)
-        val endDateString = dateFormat.format(endDate!!)
+                                for (taskSnapshot in tasksSnapshot.children) {
+                                    val startTime = taskSnapshot.child("startTime").getValue(Int::class.java) ?: 0
+                                    val endTime = taskSnapshot.child("endTime").getValue(Int::class.java) ?: 0
+                                    totalHoursWorked += (endTime - startTime).toFloat()
+                                }
 
-        // Fetch goals
-        database.child("goals")
-            .orderByChild("date")
-            .startAt(startDateString)
-            .endAt(endDateString)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(goalSnapshot: DataSnapshot) {
-                    pieChartContainer.removeAllViews()
+                                updatePieChart(minDailyGoal.toFloat(), maxDailyGoal.toFloat(), totalHoursWorked)
+                            }
 
-                    // For each goal entry, fetch corresponding time entries
-                    for (goal in goalSnapshot.children) {
-                        val date = goal.child("date").getValue(String::class.java) ?: continue
-                        val minGoal = goal.child("minDailyGoal").getValue(Float::class.java) ?: 0f
-                        val maxGoal = goal.child("maxDailyGoal").getValue(Float::class.java) ?: 0f
-                        val userId = goal.child("userId").getValue(String::class.java) ?: continue
-
-                        fetchTimeEntries(date, userId, minGoal, maxGoal)
+                            override fun onCancelled(databaseError: DatabaseError) {
+                                Log.e("Graph", "Database error: ${databaseError.message}")
+                            }
+                        })
                     }
                 }
 
                 override fun onCancelled(databaseError: DatabaseError) {
-                    databaseError.toException().printStackTrace()
+                    Log.e("Graph", "Database error: ${databaseError.message}")
                 }
             })
     }
 
-    private fun fetchTimeEntries(date: String, userId: String, minGoal: Float, maxGoal: Float) {
-        val startTimestamp = dateToTimestamp(date).toDouble()
-        val endTimestamp = (startTimestamp + 24 * 60 * 60 * 1000 - 1).toDouble()  // End of the day
+    private fun updatePieChart(minGoal: Float, maxGoal: Float, totalHours: Float) {
+        val list: ArrayList<PieEntry> = ArrayList()
 
-        database.child("entries").child(userId)
-            .orderByChild("timestamp")
-            .startAt(startTimestamp)
-            .endAt(endTimestamp)
-            .addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(entrySnapshot: DataSnapshot) {
-                    var totalHoursWorked = 0f
+        list.add(PieEntry(minGoal, "Min Goal"))
+        list.add(PieEntry(maxGoal, "Max Goal"))
+        list.add(PieEntry(totalHours, "Hours Worked"))
 
-                    for (entry in entrySnapshot.children) {
-                        // Assuming each entry has a duration in hours
-                        val duration = entry.child("duration").getValue(Float::class.java) ?: 0f
-                        totalHoursWorked += duration
-                    }
+        val pieDataSet = PieDataSet(list, "Goals & Hours Worked")
 
-                    addPieChart(date, totalHoursWorked, minGoal, maxGoal)
-                }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    databaseError.toException().printStackTrace()
-                }
-            })
-    }
-
-
-    private fun addPieChart(date: String, hoursWorked: Float, minGoal: Float, maxGoal: Float) {
-        val pieChart = PieChart(this)
-        pieChart.layoutParams = LinearLayout.LayoutParams(
-            LinearLayout.LayoutParams.MATCH_PARENT,
-            LinearLayout.LayoutParams.WRAP_CONTENT
-        )
-
-        val entries = ArrayList<PieEntry>()
-        entries.add(PieEntry(hoursWorked, "Hours Worked"))
-        entries.add(PieEntry(minGoal, "Min Goal"))
-        entries.add(PieEntry(maxGoal, "Max Goal"))
-
-        val pieDataSet = PieDataSet(entries, date)
-        pieDataSet.setColors(ColorTemplate.MATERIAL_COLORS, 255)
+        pieDataSet.setColors(ColorTemplate.LIBERTY_COLORS, 255)
         pieDataSet.valueTextColor = Color.BLACK
         pieDataSet.valueTextSize = 15f
 
         val pieData = PieData(pieDataSet)
+
         pieChart.data = pieData
-        pieChart.description.text = date
+        pieChart.description.text = " "
+        pieChart.centerText = "Goals & Hours Worked"
         pieChart.animateY(2000)
-
-        pieChartContainer.addView(pieChart)
-    }
-
-    private fun dateToTimestamp(date: String): Long {
-        return dateFormat.parse(date)?.time ?: 0
     }
 }

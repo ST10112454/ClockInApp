@@ -47,6 +47,7 @@ class Report : AppCompatActivity() , TaskItemClickListener {
         }
         setRecyclerView()
         loadGoals()
+
         val viewGraphButton = findViewById<Button>(R.id.viewGraphButton)
         viewGraphButton.setOnClickListener {
             // Create an Intent to start SecondActivity
